@@ -1,0 +1,9 @@
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.pem
+*.key
+*.tfvars
+.env
+vault.yml
+secrets.yml
