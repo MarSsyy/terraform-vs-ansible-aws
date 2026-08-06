@@ -11,17 +11,7 @@ provider "aws" {
   region = var.region
 }
 
-data "aws_availability_zones" "available" {}
 
-data "aws_ami" "amazon_linux" {
-  most_recent = true
-  owners      = ["amazon"]
-
-  filter {
-    name   = "name"
-    values = ["al2023-ami-*-x86_64"]
-  }
-}
 
 resource "random_id" "suffix" {
   byte_length = 4
@@ -52,7 +42,7 @@ resource "aws_internet_gateway" "igw" {
 resource "aws_subnet" "public_a" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.1.0/24"
-  availability_zone       = data.aws_availability_zones.available.names[0]
+  availability_zone       = "eu-west-1a"
   map_public_ip_on_launch = true
 
   tags = {
@@ -63,7 +53,7 @@ resource "aws_subnet" "public_a" {
 resource "aws_subnet" "public_b" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.2.0/24"
-  availability_zone       = data.aws_availability_zones.available.names[1]
+  availability_zone       = "eu-west-1b"
   map_public_ip_on_launch = true
 
   tags = {
@@ -74,7 +64,7 @@ resource "aws_subnet" "public_b" {
 resource "aws_subnet" "private_a" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.3.0/24"
-  availability_zone = data.aws_availability_zones.available.names[0]
+  availability_zone = "eu-west-1a"
 
   tags = {
     Name = "${var.project_name}-private-a"
@@ -84,7 +74,7 @@ resource "aws_subnet" "private_a" {
 resource "aws_subnet" "private_b" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.4.0/24"
-  availability_zone = data.aws_availability_zones.available.names[1]
+  availability_zone = "eu-west-1b"
 
   tags = {
     Name = "${var.project_name}-private-b"
@@ -316,7 +306,7 @@ resource "aws_lb_listener" "http_listener" {
 
 resource "aws_launch_template" "app_lt" {
   name_prefix   = "${var.project_name}-lt-"
-  image_id      = data.aws_ami.amazon_linux.id
+  image_id      = "ami-0ada9eff90324cb27"
   instance_type = "t3.micro"
 
   iam_instance_profile {

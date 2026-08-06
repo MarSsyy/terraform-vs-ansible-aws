@@ -203,6 +203,31 @@
           }
         state: present
 
+    - name: Attach S3 access policy to EC2 role
+      amazon.aws.iam_policy:
+        iam_type: role
+        iam_name: "{{ project_name }}-ec2-role"
+        policy_name: "{{ project_name }}-s3-policy"
+        state: present
+        policy_json: |
+          {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "s3:GetObject",
+                  "s3:PutObject",
+                  "s3:ListBucket"
+                ],
+                "Resource": [
+                  "arn:aws:s3:::{{ project_name }}-bucket-fahim-20115491",
+                  "arn:aws:s3:::{{ project_name }}-bucket-fahim-20115491/*"
+                ]
+              }
+            ]
+          }
+
     - name: Create IAM instance profile
       amazon.aws.iam_instance_profile:
         name: "{{ project_name }}-profile"
