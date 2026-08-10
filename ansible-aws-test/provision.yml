@@ -104,7 +104,7 @@
           Name: "{{ project_name }}-public-rt"
         state: present
 
-        - name: Create NAT Gateway A
+    - name: Create NAT Gateway A
       amazon.aws.ec2_vpc_nat_gateway:
         subnet_id: "{{ public_a.subnet.id }}"
         region: "{{ region }}"
@@ -122,7 +122,7 @@
         if_exist_do_not_create: true
       register: nat_b
 
-        - name: Create private route table A
+    - name: Create private route table A
       amazon.aws.ec2_vpc_route_table:
         vpc_id: "{{ vpc.vpc.id }}"
         region: "{{ region }}"
@@ -359,6 +359,8 @@
         threshold: 70
         period: 60
         evaluation_periods: 2
+        dimensions:
+          AutoScalingGroupName: "{{ project_name }}-asg"
         description: High CPU alarm for EC2 instances
         region: "{{ region }}"
         state: present

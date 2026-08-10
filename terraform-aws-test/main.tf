@@ -408,4 +408,8 @@ resource "aws_cloudwatch_metric_alarm" "asg_cpu_high" {
   statistic           = "Average"
   threshold           = 70
   alarm_description   = "High CPU alarm for EC2 instances"
+
+  dimensions = {
+    AutoScalingGroupName = aws_autoscaling_group.app.name
+  }
 }
