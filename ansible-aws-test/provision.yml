@@ -104,28 +104,51 @@
           Name: "{{ project_name }}-public-rt"
         state: present
 
-    - name: Create NAT Gateway
+        - name: Create NAT Gateway A
       amazon.aws.ec2_vpc_nat_gateway:
         subnet_id: "{{ public_a.subnet.id }}"
         region: "{{ region }}"
         wait: true
         state: present
         if_exist_do_not_create: true
-      register: nat
+      register: nat_a
 
-    - name: Create private route table
+    - name: Create NAT Gateway B
+      amazon.aws.ec2_vpc_nat_gateway:
+        subnet_id: "{{ public_b.subnet.id }}"
+        region: "{{ region }}"
+        wait: true
+        state: present
+        if_exist_do_not_create: true
+      register: nat_b
+
+        - name: Create private route table A
       amazon.aws.ec2_vpc_route_table:
         vpc_id: "{{ vpc.vpc.id }}"
         region: "{{ region }}"
         subnets:
           - "{{ private_a.subnet.id }}"
+        routes:
+          - dest: "0.0.0.0/0"
+            nat_gateway_id: "{{ nat_a.nat_gateway_id }}"
+        tags:
+          Name: "{{ project_name }}-private-rt-a"
+        state: present
+      register: private_rt_a
+
+    - name: Create private route table B
+      amazon.aws.ec2_vpc_route_table:
+        vpc_id: "{{ vpc.vpc.id }}"
+        region: "{{ region }}"
+        subnets:
           - "{{ private_b.subnet.id }}"
         routes:
           - dest: "0.0.0.0/0"
-            nat_gateway_id: "{{ nat.nat_gateway_id }}"
+            nat_gateway_id: "{{ nat_b.nat_gateway_id }}"
         tags:
-          Name: "{{ project_name }}-private-rt"
+          Name: "{{ project_name }}-private-rt-b"
         state: present
+      register: private_rt_b
 
     - name: Create ALB security group
       amazon.aws.ec2_security_group:
