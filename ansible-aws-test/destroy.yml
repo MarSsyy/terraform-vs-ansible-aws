@@ -25,8 +25,8 @@
         min_size: 0
         max_size: 0
         desired_capacity: 0
-        force_delete: true
         state: absent
+        wait_timeout: 1200
       ignore_errors: true
 
     - name: Delete Application Load Balancer
@@ -107,14 +107,28 @@
       when: vpc_info.vpcs | length > 0
       ignore_errors: true
 
-    - name: Delete NAT Gateway
+    - name: Delete NAT Gateways
       amazon.aws.ec2_vpc_nat_gateway:
         nat_gateway_id: "{{ item.nat_gateway_id }}"
         region: "{{ region }}"
         state: absent
         wait: true
       loop: "{{ nat_info.result | default([]) }}"
-      when: nat_info is defined
+      when:
+        - nat_info is defined
+        - nat_info.result is defined
+      ignore_errors: true
+
+    - name: Release NAT Gateway Elastic IPs
+      amazon.aws.ec2_eip:
+        public_ip: "{{ item.1.public_ip }}"
+        region: "{{ region }}"
+        state: absent
+        release_on_disassociation: true
+      loop: "{{ nat_info.result | default([]) | subelements('nat_gateway_addresses', skip_missing=True) }}"
+      when:
+        - nat_info is defined
+        - nat_info.result is defined
       ignore_errors: true
 
     - name: Get route tables
@@ -130,11 +144,16 @@
       amazon.aws.ec2_vpc_route_table:
         route_table_id: "{{ item.id }}"
         region: "{{ region }}"
+        lookup: id
         state: absent
       loop: "{{ route_tables.route_tables | default([]) }}"
       when:
         - route_tables is defined
-        - item.associations | selectattr('main', 'defined') | selectattr('main', 'equalto', true) | list | length == 0
+        - item.associations
+          | selectattr('main', 'defined')
+          | selectattr('main', 'equalto', true)
+          | list
+          | length == 0
       ignore_errors: true
 
     - name: Delete security groups
@@ -178,4 +197,5 @@
         cidr_block: "10.0.0.0/16"
         region: "{{ region }}"
         state: absent
+      when: vpc_info.vpcs | length > 0
       ignore_errors: true

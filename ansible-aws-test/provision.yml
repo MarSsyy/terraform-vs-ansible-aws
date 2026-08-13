@@ -268,6 +268,7 @@
         health_check_protocol: HTTP
         health_check_path: /
         successful_response_codes: "200"
+        modify_targets: false
         state: present
       register: target_group
 
@@ -319,6 +320,8 @@
           version: "$Latest"
         health_check_type: ELB
         health_check_period: 300
+        wait_for_instances: true
+        wait_timeout: 1200
         state: present
       register: asg
 
