@@ -373,6 +373,8 @@ resource "aws_autoscaling_group" "app_asg" {
 
   health_check_type         = "ELB"
   health_check_grace_period = 300
+
+  wait_for_capacity_timeout = "20m"
 }
 
 # ---------------- RDS ----------------
