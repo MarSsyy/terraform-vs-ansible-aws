@@ -1,0 +1,20 @@
+---
+- name: Provision single VPC
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    region: eu-west-1
+    vpc_cidr: 10.0.0.0/16
+    vpc_name: ansible-single-vpc
+
+  tasks:
+    - name: Create VPC
+      amazon.aws.ec2_vpc_net:
+        name: "{{ vpc_name }}"
+        cidr_block: "{{ vpc_cidr }}"
+        region: "{{ region }}"
+        dns_support: true
+        dns_hostnames: true
+        state: present

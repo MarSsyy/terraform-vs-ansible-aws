@@ -1,0 +1,18 @@
+---
+- name: Deprovision single RDS MySQL instance
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    region: eu-west-1
+    db_identifier: ansible-single-rds
+
+  tasks:
+    - name: Delete RDS MySQL instance
+      amazon.aws.rds_instance:
+        db_instance_identifier: "{{ db_identifier }}"
+        region: "{{ region }}"
+        state: absent
+        skip_final_snapshot: true
+        wait: true

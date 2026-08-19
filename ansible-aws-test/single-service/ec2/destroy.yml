@@ -1,0 +1,28 @@
+---
+- name: Deprovision single EC2 instance
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    region: eu-west-1
+
+  tasks:
+    - name: Find EC2 instance
+      amazon.aws.ec2_instance_info:
+        region: "{{ region }}"
+        filters:
+          "tag:Name": ansible-single-ec2
+          instance-state-name:
+            - pending
+            - running
+            - stopping
+            - stopped
+      register: ec2_info
+
+    - name: Terminate EC2 instance
+      amazon.aws.ec2_instance:
+        region: "{{ region }}"
+        instance_ids: "{{ ec2_info.instances | map(attribute='instance_id') | list }}"
+        state: absent
+      when: ec2_info.instances | length > 0

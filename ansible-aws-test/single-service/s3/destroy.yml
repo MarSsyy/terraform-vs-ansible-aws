@@ -1,0 +1,17 @@
+---
+- name: Deprovision single S3 bucket
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    region: eu-west-1
+    bucket_name: ansible-single-s3-fahim-20115491
+
+  tasks:
+    - name: Delete S3 bucket
+      amazon.aws.s3_bucket:
+        name: "{{ bucket_name }}"
+        region: "{{ region }}"
+        state: absent
+        force: true

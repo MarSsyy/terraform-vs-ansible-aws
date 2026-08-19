@@ -1,0 +1,22 @@
+---
+- name: Provision single EC2 instance
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    region: eu-west-1
+    ami_id: ami-0ada9eff90324cb27
+    instance_type: t3.micro
+    subnet_id: subnet-001cc6dd122a7b651
+
+  tasks:
+    - name: Create EC2 instance
+      amazon.aws.ec2_instance:
+        name: ansible-single-ec2
+        image_id: "{{ ami_id }}"
+        instance_type: "{{ instance_type }}"
+        vpc_subnet_id: "{{ subnet_id }}"
+        region: "{{ region }}"
+        exact_count: 1
+        state: present

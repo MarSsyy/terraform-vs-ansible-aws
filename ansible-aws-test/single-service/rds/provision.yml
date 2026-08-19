@@ -1,0 +1,30 @@
+---
+- name: Provision single RDS MySQL instance
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    region: eu-west-1
+    db_identifier: ansible-single-rds
+    db_instance_class: db.t3.micro
+    db_username: admin
+    db_password: "{{ lookup('env', 'DB_PASSWORD') }}"
+    db_subnet_group: single-service-rds-subnet-group
+
+  tasks:
+    - name: Create RDS MySQL instance
+      amazon.aws.rds_instance:
+        db_instance_identifier: "{{ db_identifier }}"
+        engine: mysql
+        db_instance_class: "{{ db_instance_class }}"
+        allocated_storage: 20
+        master_username: "{{ db_username }}"
+        master_user_password: "{{ db_password }}"
+        db_subnet_group_name: "{{ db_subnet_group }}"
+        publicly_accessible: false
+        skip_final_snapshot: true
+        deletion_protection: false
+        region: "{{ region }}"
+        state: present
+        wait: true
