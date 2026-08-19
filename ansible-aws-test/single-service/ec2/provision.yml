@@ -19,4 +19,4 @@
         vpc_subnet_id: "{{ subnet_id }}"
         region: "{{ region }}"
         exact_count: 1
-        state: present
+        state: running
