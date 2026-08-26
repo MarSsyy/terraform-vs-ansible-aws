@@ -111,6 +111,8 @@
         wait: true
         state: present
         if_exist_do_not_create: true
+        tags:
+          Name: "{{ project_name }}-nat-a"
       register: nat_a
 
     - name: Create NAT Gateway B
@@ -120,6 +122,8 @@
         wait: true
         state: present
         if_exist_do_not_create: true
+        tags:
+          Name: "{{ project_name }}-nat-b"
       register: nat_b
 
     - name: Create private route table A

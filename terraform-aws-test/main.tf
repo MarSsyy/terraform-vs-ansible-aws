@@ -244,10 +244,10 @@ resource "aws_security_group" "rds_sg" {
 # ---------------- S3 ----------------
 
 resource "aws_s3_bucket" "app_bucket" {
-  bucket = "${var.project_name}-bucket-${random_id.suffix.hex}"
+  bucket = "${var.project_name}-bucket-fahim-20115491"
 
   tags = {
-    Name = "${var.project_name}-s3"
+    Name = "${var.project_name}-bucket-fahim-20115491"
   }
 }
 

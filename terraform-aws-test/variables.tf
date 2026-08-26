@@ -3,7 +3,7 @@ variable "region" {
 }
 
 variable "project_name" {
-  default = "iac-comparison"
+  default = "terraform-comparison"
 }
 
 variable "db_username" {
